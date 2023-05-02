@@ -79,7 +79,7 @@ function init() {
   dragControls = new THREE.DragControls(pointMeshes, camera, renderer.domElement);
   dragControls.addEventListener('dragstart', onDragStart);
   dragControls.addEventListener('dragend', onDragEnd);
-  dragControls.addEventListener('dragmove', onDragMove);
+  dragControls.addEventListener('drag', onDragMove);
 
   // Handle window resize
   window.addEventListener('resize', onWindowResize);
