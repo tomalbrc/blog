@@ -14,3 +14,18 @@ execute as Pinnit at @s run summon minecraft:item_display ~0.134 ~0.04 ~ {tags:[
 993 2.74 1137
 993.38 2.04 1137 
 993.603 2.04 1137
+
+
+execute as Pinnit at @s run summon minecraft:item_display ~ ~0.2 ~ {tags:["id_model","id_degen"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.000f, 0.000f, 0.000f,0.000f,0.000f, 0.000f, 0.000f,0.000f,0.000f, 0.000f, 0.000f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
+
+execute as Pinnit at @s run summon minecraft:item_display ~ ~1.2 ~ {tags:["id_head","id_model"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.938f, 0.000f, 0.000f,0.000f,0.000f, 0.938f, 0.000f,-0.f,0.000f, 0.000f, 0.938f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
+
+execute as Pinnit at @s run summon minecraft:item_display ~-.319 ~0.74 ~ {tags:["id_arm1","id_model"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.469f, 0.000f, 0.000f,0.000f,0.000f, 1.406f, 0.000f,-0.f,0.000f, 0.000f, 0.469f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
+
+execute as Pinnit at @s run summon minecraft:item_display ~.35 ~0.74 ~ {tags:["id_arm2","id_model"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.469f, 0.000f, 0.000f,0.000f,0.000f, 1.406f, 0.000f,-0.f,0.000f, 0.000f, 0.469f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
+
+execute as Pinnit at @s run summon minecraft:item_display ~ ~0.74 ~ {tags:["id_body","id_model"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.938f, 0.000f, 0.000f,0.000f,0.000f, 1.406f, 0.000f,-0.f,0.000f, 0.000f, 0.469f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
+
+execute as Pinnit at @s run summon minecraft:item_display ~-.092 ~0.04 ~ {tags:["id_leg1","id_model"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.469f, 0.000f, 0.000f,0.000f,0.000f, 1.406f, 0.000f,-0.f,0.000f, 0.000f, 0.469f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
+
+execute as Pinnit at @s run summon minecraft:item_display ~0.130 ~0.04 ~ {tags:["id_leg2","id_model"],item:{id:"minecraft:player_head",Count:1s,tag:{SkullOwner:Pinnit}},interpolation_duration:0,start_interpolation:0,transformation:[0.469f, 0.000f, 0.000f,0.000f,0.000f, 1.406f, 0.000f,-0.f,0.000f, 0.000f, 0.469f,0.000f,0.000f, 0.000f, 0.000f,1.000f]}
