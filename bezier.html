@@ -19,11 +19,17 @@
 </head>
 <body>
   <script>
-let camera, scene, renderer, controls, dragControls;
-let curveGeometry;
-let curve, pointGeometry, pointMaterial, pointMeshes = [];
+let camera, scene, renderer;
+let curves = [];
 
-let pointStartPosition = new THREE.Vector3();
+const CurveData = class {
+  constructor(curve, curveGeometry, index) {
+    this.curve = curve;
+    this.curveGeometry = curveGeometry;
+    this.index = index;
+  };
+};
+
 
 init();
 
@@ -38,17 +44,6 @@ function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x121212);
 
-  // Create curve
-  const curveMaterial = new THREE.LineBasicMaterial({ color: 0xffff44 });
-  curve = new THREE.CubicBezierCurve3(
-    new THREE.Vector3(-1, -1, 0),
-    new THREE.Vector3(-0.5, 1, 0),
-    new THREE.Vector3(0.5, -1, 0),
-    new THREE.Vector3(1, 1, 0)
-  );
-  curveGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(50));
-  const curveLine = new THREE.Line(curveGeometry, curveMaterial);
-  scene.add(curveLine);
   
   const axisHelper = new THREE.AxesHelper(5);
   scene.add(axisHelper);
@@ -56,17 +51,9 @@ function init() {
   const gridHelper = new THREE.GridHelper(10, 10);
   scene.add(gridHelper);
 
-  // Create points
-  pointGeometry = new THREE.SphereGeometry(0.1, 32, 32);
-  pointMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-  const points = [curve.v0, curve.v1, curve.v2, curve.v3];
-  for (let i = 0; i < points.length; i++) {
-    const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
-    pointMesh.position.copy(points[i]);
-    scene.add(pointMesh);
-    pointMeshes.push(pointMesh);
-  }
-
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+  
   // Create renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -75,25 +62,60 @@ function init() {
   // Create controls
   controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-  // Create drag controls
-  dragControls = new THREE.DragControls(pointMeshes, camera, renderer.domElement);
-  dragControls.addEventListener('dragstart', onDragStart);
-  dragControls.addEventListener('dragend', onDragEnd);
-  dragControls.addEventListener('drag', onDragMove);
+
+  newCurve(scene);
 
   // Handle window resize
   window.addEventListener('resize', onWindowResize);
 }
 
+function newCurve(scene) {
+    // Create curve
+    const curveMaterial = new THREE.LineBasicMaterial({ color: 0xffff44 });
+    
+    randomPoints = Array.from({length: 4}, () => new THREE.Vector3().random().multiplyScalar(2).subScalar(1));
+    if (curves.length != 0) randomPoints[0] = curves[curves.length - 1].v3;
+
+    curve = new THREE.CubicBezierCurve3(...randomPoints);
+    curveGeometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(50));
+    const curveLine = new THREE.Line(curveGeometry, curveMaterial);
+    scene.add(curveLine);
+
+    // Create points
+    pointGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+    const color = new THREE.Color(Math.random(), Math.random(), Math.random());
+    const pointMaterial = new THREE.MeshPhongMaterial({ color: color });
+    const points = [curve.v0, curve.v1, curve.v2, curve.v3];
+    
+    pointMeshes = [];
+    for (let i = 0; i < points.length; i++) {
+      const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
+      pointMesh.position.copy(points[i]);
+      pointMesh.userdata = new CurveData(curve, curveGeometry, i);
+      scene.add(pointMesh);
+      pointMeshes.push(pointMesh);
+    }
+
+    // Create drag controls
+    dragControls = new THREE.DragControls(pointMeshes, camera, renderer.domElement);
+    dragControls.addEventListener('dragstart', onDragStart);
+    dragControls.addEventListener('dragend', onDragEnd);
+    dragControls.addEventListener('drag', onDragMove);
+    
+    curves.push(curve)
+}
+
 function onDragStart(event) {
     controls.enabled = false;
-  pointStartPosition.copy(event.object.position);
 }
 
 function onDragEnd(event) {
+  index = event.object.userdata.index;
+  curve = event.object.userdata.curve;
+  curveGeometry = event.object.userdata.curveGeometry;
+	
   const curvePoints = [curve.v0, curve.v1, curve.v2, curve.v3];
-  const pointIndex = pointMeshes.indexOf(event.object);
-  curvePoints[pointIndex].copy(event.object.position);
+  curvePoints[index].copy(event.object.position);
   curve.needsUpdate = true;
   controls.enabled = true;
   
@@ -101,10 +123,13 @@ function onDragEnd(event) {
 }
 
 function onDragMove(event) {
-  const curvePoints = [curve.v0, curve.v1, curve.v2, curve.v3];
-  const pointIndex = pointMeshes.indexOf(event.object);
-  curvePoints[pointIndex].copy(event.object.position);
-  curve.needsUpdate = true;
+    index = event.object.userdata.index;
+    curve = event.object.userdata.curve;
+    curveGeometry = event.object.userdata.curveGeometry;
+	
+    const curvePoints = [curve.v0, curve.v1, curve.v2, curve.v3];
+    curvePoints[index].copy(event.object.position);
+    curve.needsUpdate = true;
 
   curveGeometry.setFromPoints(curve.getPoints(50));
 }
@@ -128,15 +153,34 @@ animate();
 var gui = new dat.GUI();
 var obj = {
   add: function() {
-    const curvePoints = [curve.v0, curve.v1, curve.v2, curve.v3];
-	const curveValues = curvePoints.flatMap(p => [p.x.toFixed(4), p.y.toFixed(4), p.z.toFixed(4)]).join(" ");
-	
-	navigator.clipboard.writeText(curveValues).then(() => {
-		console.log("Curve values copied to clipboard");
-	});
+    curvePoints = [];
+    for (let i = 0; i < curves.length; i++) {
+      const v0 = curves[i].v0;
+      const v1 = curves[i].v1;
+      const v2 = curves[i].v2;
+      const v3 = curves[i].v3;
+      curvePoints.push(v0);
+      curvePoints.push(v1);
+      curvePoints.push(v2);
+      curvePoints.push(v3);
+
+    }
+    
+    console.log(curvePoints);
+    
+    const curveValues = curvePoints.flatMap(p => [p.x.toFixed(4), p.y.toFixed(4), p.z.toFixed(4)]).join(" ");
+    
+    
+    navigator.clipboard.writeText(curveValues).then(() => {
+        console.log("Curve values copied to clipboard");
+    });
+  },
+  newCurve: function() {
+      newCurve(scene);
   }
 };
 gui.add(obj, "add").name("Copy point values");
+gui.add(obj, "newCurve").name("new curve");
 
   </script>
 </body>
